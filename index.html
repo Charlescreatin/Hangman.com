@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangman Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #afeeee; /* Light turquoise background color */
+    }
+    #word-container {
+        margin-top: 60px; /* Adjusted margin */
+        font-size: 72px; /* Increased font size */
+    }
+    #letters-container {
+        margin-top: 40px; /* Adjusted margin */
+    }
+    #attempts-left {
+        margin-top: 20px; /* Adjusted margin */
+        font-size: 36px; /* Increased font size */
+    }
+    .letter {
+        display: inline-block;
+        width: 90px; /* Adjusted width */
+        height: 90px; /* Adjusted height */
+        line-height: 90px; /* Adjusted line height */
+        font-size: 36px; /* Increased font size */
+        text-align: center;
+        border: 2px solid black; /* Adjusted border */
+        margin-right: 10px; /* Adjusted margin */
+        cursor: pointer;
+    }
+    .letter:hover {
+        background-color: lightgray;
+    }
+</style>
+</head>
+<body>
+<h1 style="font-size: 72px;">Hangman Game</h1> <!-- Increased font size -->
+<div id="word-container"></div>
+<div id="letters-container"></div>
+<div id="attempts-left"></div>
+
+<script>
+    // List of words for the game
+    const words = ["apple", "banana", "orange", "grape", "kiwi", "strawberry", "melon", "pineapple", "peach", "blueberry"];
+    let wordToGuess;
+    let guessedLetters = [];
+    let attemptsLeft = 6;
+
+    // Function to choose a random word
+    function chooseWord() {
+        wordToGuess = words[Math.floor(Math.random() * words.length)];
+    }
+
+    // Function to display the word with underscores for unknown letters
+    function displayWord() {
+        let display = '';
+        for (let letter of wordToGuess) {
+            if (guessedLetters.includes(letter)) {
+                display += letter + ' ';
+            } else {
+                display += '_ ';
+            }
+        }
+        document.getElementById('word-container').innerText = display;
+    }
+
+    // Function to create letter buttons
+    function createLetterButtons() {
+        const lettersContainer = document.getElementById('letters-container');
+        lettersContainer.innerHTML = '';
+        for (let i = 97; i <= 122; i++) {
+            const letter = String.fromCharCode(i);
+            const button = document.createElement('div');
+            button.textContent = letter;
+            button.className = 'letter';
+            button.onclick = function() {
+                checkLetter(letter);
+            }
+            lettersContainer.appendChild(button);
+        }
+    }
+
+    // Function to check if a guessed letter is correct
+    function checkLetter(letter) {
+        if (guessedLetters.includes(letter)) {
+            return; // Letter already guessed
+        }
+        guessedLetters.push(letter);
+        if (!wordToGuess.includes(letter)) {
+            attemptsLeft--;
+        }
+        displayWord();
+        displayAttemptsLeft();
+        checkGameStatus();
+    }
+
+    // Function to display attempts left
+    function displayAttemptsLeft() {
+        document.getElementById('attempts-left').innerText = 'Attempts left: ' + attemptsLeft;
+    }
+
+    // Function to check if the game is won or lost
+    function checkGameStatus() {
+        if (attemptsLeft === 0) {
+            alert('Sorry, you\'re out of attempts! The word was: ' + wordToGuess);
+            resetGame();
+        } else if (!displayWord().includes('_')) {
+            alert('Congratulations! You\'ve guessed the word: ' + wordToGuess);
+            resetGame();
+        }
+    }
+
+    // Function to reset the game
+    function resetGame() {
+        guessedLetters = [];
+        attemptsLeft = 6;
+        chooseWord();
+        displayWord();
+        displayAttemptsLeft();
+    }
+
+    // Initialize the game
+    chooseWord();
+    displayWord();
+    displayAttemptsLeft();
+    createLetterButtons();
+</script>
+</body>
+</html>
